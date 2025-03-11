@@ -1,0 +1,23 @@
+```
+
+And update the database configuration:
+[15-Feb-2025 10:56:19 Europe/Berlin] Request Method: OPTIONS
+[15-Feb-2025 10:56:19 Europe/Berlin] Raw input: 
+[15-Feb-2025 10:56:19 Europe/Berlin] Request Method: POST
+[15-Feb-2025 10:56:19 Europe/Berlin] Raw input: {"id":1}
+[15-Feb-2025 10:56:19 Europe/Berlin] Decoded input: Array
+(
+    [id] => 1
+)
+
+[15-Feb-2025 10:56:19 Europe/Berlin] Product ID to delete: 1
+[15-Feb-2025 10:56:19 Europe/Berlin] Found product: Array
+(
+    [image_url] => uploads/675516db4df1c.jpeg
+)
+
+[15-Feb-2025 10:56:19 Europe/Berlin] Attempting to delete image at: C:/xampp/htdocs/backend/uploads/675516db4df1c.jpeg
+[15-Feb-2025 10:56:19 Europe/Berlin] Image file not found at: C:/xampp/htdocs/backend/uploads/675516db4df1c.jpeg
+[15-Feb-2025 10:56:19 Europe/Berlin] Delete query executed. Result: true
+[15-Feb-2025 10:56:19 Europe/Berlin] Sending success response: {"success":true,"message":"Product deleted successfully"}
+[15-Feb-2025 10:56:19 Europe/Berlin] Script completed

@@ -1,0 +1,139 @@
+[09-Dec-2024 08:54:12 Europe/Berlin] Request received: POST
+[09-Dec-2024 08:54:12 Europe/Berlin] POST data: Array
+(
+    [name] => matte aesthetic sticker
+    [description] => matte aesthetic sticker business.
+    [dimensions] => 3x3
+    [price] => 350.00
+    [style] => Matte
+)
+
+[09-Dec-2024 08:54:12 Europe/Berlin] FILES data: Array
+(
+    [image] => Array
+        (
+            [name] => canva-neutral-floral-thank-you-circle-sticker-7rY2cNoLLTU.jpg
+            [type] => image/jpeg
+            [tmp_name] => C:\xampp\tmp\php5E43.tmp
+            [error] => 0
+            [size] => 67673
+        )
+
+)
+
+[09-Dec-2024 08:54:12 Europe/Berlin] Upload directory: C:\xampp\htdocs\backend\api/../uploads/
+[09-Dec-2024 08:54:12 Europe/Berlin] Attempting to move uploaded file to: C:\xampp\htdocs\backend\api/../uploads/6756a224931d8.jpg
+[09-Dec-2024 08:54:12 Europe/Berlin] File uploaded successfully to: uploads/6756a224931d8.jpg
+[09-Dec-2024 08:54:12 Europe/Berlin] SQL Parameters: Array
+(
+    [:name] => matte aesthetic sticker
+    [:description] => matte aesthetic sticker business.
+    [:dimensions] => 3x3
+    [:price] => 350
+    [:style] => Matte
+    [:image_url] => uploads/6756a224931d8.jpg
+)
+
+[11-Dec-2024 10:36:23 Europe/Berlin] Request received: POST
+[11-Dec-2024 10:36:23 Europe/Berlin] POST data: Array
+(
+    [name] => Handmade with love stickers
+    [description] => Aesthetic packaging for business
+    [dimensions] => 1.5
+    [price] => 450.00
+    [style] => Matte
+)
+
+[11-Dec-2024 10:36:23 Europe/Berlin] FILES data: Array
+(
+    [image] => Array
+        (
+            [name] => sticker.jpg
+            [type] => image/jpeg
+            [tmp_name] => C:\xampp\tmp\phpA857.tmp
+            [error] => 0
+            [size] => 5441
+        )
+
+)
+
+[11-Dec-2024 10:36:23 Europe/Berlin] Upload directory: C:\xampp\htdocs\backend\api/../uploads/
+[11-Dec-2024 10:36:23 Europe/Berlin] Attempting to move uploaded file to: C:\xampp\htdocs\backend\api/../uploads/67595d174ceb4.jpg
+[11-Dec-2024 10:36:23 Europe/Berlin] File uploaded successfully to: uploads/67595d174ceb4.jpg
+[11-Dec-2024 10:36:23 Europe/Berlin] SQL Parameters: Array
+(
+    [:name] => Handmade with love stickers
+    [:description] => Aesthetic packaging for business
+    [:dimensions] => 1.5
+    [:price] => 450
+    [:style] => Matte
+    [:image_url] => uploads/67595d174ceb4.jpg
+)
+
+[16-Feb-2025 16:14:22 Europe/Berlin] Request received: POST
+[16-Feb-2025 16:14:22 Europe/Berlin] POST data: Array
+(
+    [name] => 1.5'' Thank You for Supporting My Small Business Stickers Roll Stickers Adhesive Holographic Stickers Rainbow Stickers
+    [description] => Surface Recommendation: EnvelopeMaterial: PaperNumber of Pieces: 500Style: ElegantSize: 1.5 inchShape: Round
+1. The thank you sticker is brushed on a waterproof self-adhesive paper with a glossy coating, giving a shiny and elegant look.
+2. Wide Range Of Applications: These stickers are suitable for flower bouquets, parcels, candy bags, glass jars,cookie,gift wraps,wedding favor bags or business packaging.
+3. Quality: Our thank you stickers are easy to peel or stick, it won't fall off easily with adhesive. simple and easy to use, add personal style to your products. Increase customer love.
+    [dimensions] => 1.5"
+    [price] => 449.96
+    [style] => Holographic
+)
+
+[16-Feb-2025 16:14:22 Europe/Berlin] FILES data: Array
+(
+    [image] => Array
+        (
+            [name] => holographic.png
+            [type] => image/png
+            [tmp_name] => C:\xampp\tmp\phpD82B.tmp
+            [error] => 0
+            [size] => 17732
+        )
+
+)
+
+[16-Feb-2025 16:14:22 Europe/Berlin] Error occurred: Invalid file type. Only JPG, PNG and GIF are allowed.
+[16-Feb-2025 16:14:22 Europe/Berlin] Stack trace: #0 {main}
+[16-Feb-2025 16:15:22 Europe/Berlin] Request received: POST
+[16-Feb-2025 16:15:22 Europe/Berlin] POST data: Array
+(
+    [name] => 1.5'' Thank You for Supporting My Small Business Stickers Roll Stickers Adhesive Holographic Stickers Rainbow Stickers
+    [description] => Surface Recommendation: EnvelopeMaterial: PaperNumber of Pieces: 500Style: ElegantSize: 1.5 inchShape: Round
+1. The thank you sticker is brushed on a waterproof self-adhesive paper with a glossy coating, giving a shiny and elegant look.
+2. Wide Range Of Applications: These stickers are suitable for flower bouquets, parcels, candy bags, glass jars,cookie,gift wraps,wedding favor bags or business packaging.
+3. Quality: Our thank you stickers are easy to peel or stick, it won't fall off easily with adhesive. simple and easy to use, add personal style to your products. Increase customer love.
+    [dimensions] => 1.5"
+    [price] => 449.96
+    [style] => Holographic
+)
+
+[16-Feb-2025 16:15:22 Europe/Berlin] FILES data: Array
+(
+    [image] => Array
+        (
+            [name] => Screenshot 2025-02-16 210003.png
+            [type] => image/png
+            [tmp_name] => C:\xampp\tmp\phpC21F.tmp
+            [error] => 0
+            [size] => 349532
+        )
+
+)
+
+[16-Feb-2025 16:15:22 Europe/Berlin] SQL Parameters: Array
+(
+    [:name] => 1.5'' Thank You for Supporting My Small Business Stickers Roll Stickers Adhesive Holographic Stickers Rainbow Stickers
+    [:description] => Surface Recommendation: EnvelopeMaterial: PaperNumber of Pieces: 500Style: ElegantSize: 1.5 inchShape: Round
+1. The thank you sticker is brushed on a waterproof self-adhesive paper with a glossy coating, giving a shiny and elegant look.
+2. Wide Range Of Applications: These stickers are suitable for flower bouquets, parcels, candy bags, glass jars,cookie,gift wraps,wedding favor bags or business packaging.
+3. Quality: Our thank you stickers are easy to peel or stick, it won't fall off easily with adhesive. simple and easy to use, add personal style to your products. Increase customer love.
+    [:dimensions] => 1.5"
+    [:price] => 449.96
+    [:style] => Holographic
+    [:image_url] => uploads/67b2010a84823.png
+)
+

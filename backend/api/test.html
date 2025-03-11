@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PHP Test</title>
+</head>
+<body>
+    <h1>PHP Test Page</h1>
+    <script>
+        fetch('test.php')
+            .then(response => response.text())
+            .then(data => {
+                document.body.innerHTML += '<pre>' + data + '</pre>';
+            })
+            .catch(error => {
+                document.body.innerHTML += '<p>Error: ' + error.message + '</p>';
+            });
+    </script>
+</body>
+</html> 

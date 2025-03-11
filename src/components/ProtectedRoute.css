@@ -1,0 +1,11 @@
+.protected-content-placeholder {
+    text-align: center;
+    padding: 2rem;
+    color: #666;
+  }
+  
+  .unauthorized {
+    text-align: center;
+    padding: 2rem;
+    color: #dc3545;
+  } 

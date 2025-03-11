@@ -1,0 +1,16 @@
+# Enable CORS
+Header set Access-Control-Allow-Origin "http://localhost:3000"
+Header set Access-Control-Allow-Methods "GET, POST, OPTIONS"
+Header set Access-Control-Allow-Headers "Content-Type"
+Header set Access-Control-Allow-Credentials "true"
+
+# Session settings
+php_value session.gc_maxlifetime 1800    # 30 minutes
+php_value session.cookie_lifetime 259200  # 3 days
+php_value session.cookie_httponly 1
+php_value session.cookie_secure 0
+php_value session.cookie_samesite "Lax"
+
+# PHP settings
+php_value display_errors 1
+php_value error_reporting E_ALL 

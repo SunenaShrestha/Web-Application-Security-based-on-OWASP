@@ -1,0 +1,14 @@
+CREATE DATABASE IF NOT EXISTS thankyoustickers;
+USE thankyoustickers;
+
+DROP TABLE IF EXISTS products;
+CREATE TABLE products (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    dimensions VARCHAR(100) NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    style VARCHAR(50) NOT NULL,
+    image_url VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4; 
