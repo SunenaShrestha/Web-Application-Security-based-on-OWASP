@@ -665,3 +665,39 @@ th {
 .brute-force-alert button:hover {
   background-color: #bd2130;
 }
+
+
+.brand-notify {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.notification-icon {
+  margin-left: 10px;
+  cursor: pointer;
+  font-size: 18px;
+  position: relative;
+}
+
+.notification-icon:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+.tooltip-text {
+  visibility: hidden;
+  width: 200px;
+  background-color: #333;
+  color: #fff;
+  text-align: left;
+  border-radius: 6px;
+  padding: 8px;
+  position: absolute;
+  z-index: 1;
+  top: 30px;
+  left: -80px;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  font-size: 12px;
+}

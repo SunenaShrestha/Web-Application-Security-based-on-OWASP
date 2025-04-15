@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ProductForm from '../components/ProductForm';
 import './Admin.css';
+import LogDetail from './LogDetail';
 import {DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem} from '@radix-ui/react-dropdown-menu';
 
 
@@ -23,6 +24,9 @@ const Admin = () => {
   const [orderItems, setOrderItems] = useState([]);
   const [loginAttempts, setLoginAttempts] = useState([]);
   const [showBruteForceAlert, setShowBruteForceAlert] = useState(false);
+  const [isLogDetailOpen, setLogDetailOpen] = useState(false);
+  const [selectedLogId, setSelectedLogId] = useState(null);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -297,6 +301,11 @@ const Admin = () => {
     return () => clearInterval(interval);
   }, []);
 
+  const handleViewLogs = (logId) => {
+    setSelectedLogId(logId);
+    setLogDetailOpen(true);
+  };
+
   return (
     <div className="admin-layout">
       {showBruteForceAlert && (
@@ -312,6 +321,14 @@ const Admin = () => {
       <aside className="sidebar">
         <div className="brand">
           <h2>Admin Panel</h2>
+          {loginAttempts.length > 0 && (
+            <div className="notification-icon" onClick={() => handleViewLogs(loginAttempts[0].id)} title="Latest Failed Login">
+              🔔
+              <span className="tooltip-text">
+                {loginAttempts[0].username} - {new Date(loginAttempts[0].timestamp).toLocaleString()}
+              </span>
+            </div>
+          )}
         </div>
         <nav className="nav-menu">
         <DropdownMenu>
@@ -385,7 +402,6 @@ const Admin = () => {
           {showAddProduct && (
             <ProductForm onSuccess={handleProductAdded} />
           )}
-
 
           {activeTab === 'orders' && (
             <div className="orders-table">
@@ -595,6 +611,7 @@ const Admin = () => {
                     <th>Attempt Time</th>
                     <th>User Agent</th>
                     <th>Status</th>
+                    <th>Detail</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -610,6 +627,14 @@ const Admin = () => {
                           {attempt.success === 1 ? 'Success' : 'Failed'}
                         </span>
                       </td>
+                      <td>
+                        <button 
+                          className="viewLogs"
+                          onClick={() => handleViewLogs(attempt.id)}
+                        >
+                          View Log
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -618,6 +643,14 @@ const Admin = () => {
           )}
         </div>
       </main>
+      <LogDetail
+        isOpen={isLogDetailOpen}
+        onClose={() => {
+          setLogDetailOpen(false);
+          setSelectedLogId(null);
+        }}
+        logId={selectedLogId}
+      />
     </div>
   );
 };
