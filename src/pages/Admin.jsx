@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ProductForm from '../components/ProductForm';
 import './Admin.css';
+import {DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem} from '@radix-ui/react-dropdown-menu';
+
 
 const Admin = () => {
   const [productData, setProductData] = useState({
@@ -13,15 +15,14 @@ const Admin = () => {
     image: null,
   });
   const [message, setMessage] = useState('');
-  const [banners, setBanners] = useState([]);
-  const [bannerData, setBannerData] = useState({
-    title: '',
-    image: null,
-  });
   const [activeTab, setActiveTab] = useState('dashboard');
   const [products, setProducts] = useState([]);
   const [editingProduct, setEditingProduct] = useState(null);
   const [showAddProduct, setShowAddProduct] = useState(false);
+  const [orders, setOrders] = useState([]);
+  const [orderItems, setOrderItems] = useState([]);
+  const [loginAttempts, setLoginAttempts] = useState([]);
+  const [showBruteForceAlert, setShowBruteForceAlert] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -62,68 +63,7 @@ const Admin = () => {
     }
   };
 
-  const handleBannerSubmit = async (e) => {
-    e.preventDefault();
 
-    try {
-      const formData = new FormData();
-      formData.append('title', bannerData.title);
-      formData.append('image', bannerData.image);
-
-      const response = await fetch('http://localhost/backend/api/add_banner.php', {
-        method: 'POST',
-        body: formData,
-      });
-
-      const data = await response.json();
-      if (data.success) {
-        setBannerData({ title: '', image: null });
-        fetchBanners();
-        setMessage('Banner added successfully!');
-      } else {
-        throw new Error(data.error);
-      }
-    } catch (error) {
-      setMessage('Error: ' + error.message);
-    }
-  };
-
-  const fetchBanners = async () => {
-    try {
-      const response = await fetch('http://localhost/backend/api/get_banners.php');
-      const data = await response.json();
-      if (data.success) {
-        setBanners(data.banners);
-      }
-    } catch (error) {
-      console.error('Error fetching banners:', error);
-    }
-  };
-
-  const handleDeleteBanner = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this banner?')) return;
-
-    try {
-      const response = await fetch('http://localhost/backend/api/delete_banner.php', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ id: id })
-      });
-
-      const data = await response.json();
-      if (data.success) {
-        fetchBanners();
-        setMessage('Banner deleted successfully!');
-      } else {
-        throw new Error(data.error || 'Failed to delete banner');
-      }
-    } catch (error) {
-      console.error('Delete error:', error);
-      setMessage('Error: ' + error.message);
-    }
-  };
 
   const handleProductChange = (e) => {
     const { name, value, files } = e.target;
@@ -140,13 +80,7 @@ const Admin = () => {
     }
   };
 
-  const handleBannerImageChange = (e) => {
-    const file = e.target.files[0];
-    setBannerData(prev => ({
-      ...prev,
-      image: file
-    }));
-  };
+
 
   const fetchProducts = async () => {
     try {
@@ -274,33 +208,128 @@ const Admin = () => {
     // You can add additional logic here, like refreshing the product list
   };
 
-  useEffect(() => {
-    if (activeTab === 'banners') {
-      fetchBanners();
+  const fetchOrders = async () => {
+    try {
+      const response = await fetch('http://localhost/backend/api/get_orders.php');
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (data.success) {
+        setOrders(data.orders);
+      } else {
+        throw new Error(data.error || 'Failed to fetch orders');
+      }
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+      setMessage('Error: ' + error.message);
     }
+  };
+
+  const fetchOrderItems = async () => {
+    try {
+      const response = await fetch('http://localhost/backend/api/get_order_items.php');
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (data.success) {
+        setOrderItems(data.orderItems);
+      } else {
+        throw new Error(data.error || 'Failed to fetch order items');
+      }
+    } catch (error) {
+      console.error('Error fetching order items:', error);
+      setMessage('Error: ' + error.message);
+    }
+  };
+
+  const fetchLoginAttempts = async () => {
+    try {
+      const response = await fetch('http://localhost/backend/api/get_logs.php');
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (data.success) {
+        setLoginAttempts(data.attempts);
+        
+        // Check for brute force attempts
+        if (data.brute_force_alert) {
+          setShowBruteForceAlert(true);
+        }
+      } else {
+        throw new Error(data.error || 'Failed to fetch login attempts');
+      }
+    } catch (error) {
+      console.error('Error fetching login attempts:', error);
+      setMessage('Error: ' + error.message);
+    }
+  };
+
+  useEffect(() => {
     if (activeTab === 'inventory') {
       fetchProducts();
     }
+    if (activeTab === 'orders') {
+      fetchOrders();
+      fetchOrderItems();
+    }
+    if (activeTab === 'dashboard') {
+      fetchLoginAttempts();
+    }
   }, [activeTab]);
-
+  
+  // Initial fetch for brute force detection
   useEffect(() => {
-    fetchProducts();
+    fetchLoginAttempts();
+    // Fetch login attempts every 30 seconds to update brute force detection
+    const interval = setInterval(fetchLoginAttempts, 30000);
+    return () => clearInterval(interval);
   }, []);
 
   return (
     <div className="admin-layout">
+      {showBruteForceAlert && (
+        <div className="brute-force-overlay">
+          <div className="brute-force-alert">
+            <h2>⚠️ Security Alert</h2>
+            <p>Multiple failed login attempts detected. Possible brute force attack in progress.</p>
+            <button onClick={() => setShowBruteForceAlert(false)}>Dismiss</button>
+          </div>
+        </div>
+      )}
+      
       <aside className="sidebar">
         <div className="brand">
           <h2>Admin Panel</h2>
         </div>
         <nav className="nav-menu">
-          <Link 
-            to="#" 
-            className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`}
-            onClick={() => setActiveTab('dashboard')}
-          >
-            📊 Dashboard
-          </Link>
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`}
+                onClick={() => setActiveTab('dashboard')}
+              >
+                📊 Dashboard
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="dropdown-content">
+              <DropdownMenuItem asChild>
+                <Link to="/site-logs">Attack Logs</Link>
+              </DropdownMenuItem>
+              {/* Add more items if needed */}
+            </DropdownMenuContent>
+          </DropdownMenu>
           <Link 
             to="#" 
             className={`nav-item ${activeTab === 'orders' ? 'active' : ''}`}
@@ -328,13 +357,6 @@ const Admin = () => {
             onClick={() => setActiveTab('customers')}
           >
             👥 Customers
-          </Link>
-          <Link 
-            to="#" 
-            className={`nav-item ${activeTab === 'banners' ? 'active' : ''}`}
-            onClick={() => setActiveTab('banners')}
-          >
-            🖼️ Banners
           </Link>
         </nav>
       </aside>
@@ -364,83 +386,81 @@ const Admin = () => {
             <ProductForm onSuccess={handleProductAdded} />
           )}
 
-          {activeTab === 'banners' && (
-            <div className="banner-management">
-              <form onSubmit={handleBannerSubmit} className="admin-form">
-                <div className="form-group">
-                  <label>Banner Title</label>
-                  <input
-                    type="text"
-                    value={bannerData.title}
-                    onChange={(e) => setBannerData(prev => ({
-                      ...prev,
-                      title: e.target.value
-                    }))}
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Banner Image</label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleBannerImageChange}
-                    required
-                  />
-                </div>
-                <button type="submit" className="submit-button">
-                  Add Banner
-                </button>
-              </form>
-
-              <div className="banner-list">
-                {banners.map(banner => (
-                  <div key={banner.id} className="banner-item">
-                    <img 
-                      src={`http://localhost/backend/${banner.image_url}`} 
-                      alt={banner.title} 
-                    />
-                    <div className="banner-info">
-                      <p>{banner.title}</p>
-                      <button 
-                        onClick={() => handleDeleteBanner(banner.id)}
-                        className="delete-button"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
 
           {activeTab === 'orders' && (
             <div className="orders-table">
               <table>
                 <thead>
                   <tr>
-                    <th>Order ID</th>
-                    <th>Customer</th>
-                    <th>Products</th>
-                    <th>Total</th>
-                    <th>Status</th>
-                    <th>Date</th>
+                    <th></th>
+                    <th>ID</th>
+                    <th>User ID</th>
+                    <th>Address ID</th>
+                    <th>Payment Method</th>
+                    <th>Payment Status</th>
+                    <th>eSewa Number</th>
+                    <th>Total Amount</th>
+                    <th>Order Status</th>
+                    <th>Created At</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {/* Sample order data */}
+                  {orders.map(order => (
+                    <tr key={order.id}>
+                      <td><input type="checkbox" /></td>
+                      <td>{order.id}</td>
+                      <td>{order.user_id}</td>
+                      <td>{order.address_id}</td>
+                      <td>{order.payment_method}</td>
+                      <td>{order.payment_status}</td>
+                      <td>{order.esewa_number}</td>
+                      <td>{order.total_amount}</td>
+                      <td>{order.order_status}</td>
+                      <td>{order.created_at}</td>
+                      <td>
+                        <button className="edit-btn">Edit</button>
+                        <button className="copy-btn">Copy</button>
+                        <button className="delete-btn">Delete</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {activeTab === 'orders' && orderItems.length > 0 && (
+            <div className="order-items-table mt-4">
+              <h3>Order Items</h3>
+              <table>
+                <thead>
                   <tr>
-                    <td>#192541</td>
-                    <td>John Doe</td>
-                    <td>Thank You Sticker Pack</td>
-                    <td>NPR 1,500.00</td>
-                    <td><span className="status-paid">Paid</span></td>
-                    <td>2024-01-18</td>
-                    <td>
-                      <button className="action-btn">⋮</button>
-                    </td>
+                    <th></th>
+                    <th>ID</th>
+                    <th>Order ID</th>
+                    <th>Product ID</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Actions</th>
                   </tr>
+                </thead>
+                <tbody>
+                  {orderItems.map(item => (
+                    <tr key={item.id}>
+                      <td><input type="checkbox" /></td>
+                      <td>{item.id}</td>
+                      <td>{item.order_id}</td>
+                      <td>{item.product_id}</td>
+                      <td>{item.quantity}</td>
+                      <td>{item.price}</td>
+                      <td>
+                        <button className="edit-btn">Edit</button>
+                        <button className="copy-btn">Copy</button>
+                        <button className="delete-btn">Delete</button>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
@@ -560,6 +580,40 @@ const Admin = () => {
                   </div>
                 ))}
               </div>
+            </div>
+          )}
+
+          {activeTab === 'dashboard' && (
+            <div className="logs-table">
+              <h3>Recent Login Attempts</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>IP Address</th>
+                    <th>Email</th>
+                    <th>Attempt Time</th>
+                    <th>User Agent</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {loginAttempts.map(attempt => (
+                    <tr key={attempt.id} className={attempt.success === '1' ? 'success-row' : 'failure-row'}>
+                      <td>{attempt.id}</td>
+                      <td>{attempt.ip_address}</td>
+                      <td>{attempt.email}</td>
+                      <td>{attempt.attempt_time}</td>
+                      <td>{attempt.user_agent}</td>
+                      <td>
+                        <span className={attempt.success === 1 ? 'status-success' : 'status-failure'}>
+                          {attempt.success === 1 ? 'Success' : 'Failed'}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
         </div>
