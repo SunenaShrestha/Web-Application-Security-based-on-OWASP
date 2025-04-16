@@ -40,12 +40,7 @@ try {
         SELECT COUNT(*) as failed_count
         FROM login_attempts
         WHERE success = 0
-        AND attempt_time > DATE_SUB(NOW(), INTERVAL 1 HOUR);
-
-        SELECT COUNT(*) as success_count
-        FROM login_attempts
-        WHERE success = 1
-        AND attempt_time > DATE_SUB(NOW(), INTERVAL 1 HOUR);
+        AND attempt_time > DATE_SUB(NOW(), INTERVAL 1 HOUR)
     ");
     $stmt->execute();
     $failedCount = $stmt->fetch(PDO::FETCH_ASSOC)['failed_count'];

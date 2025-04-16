@@ -42,7 +42,7 @@ const LogDetail = ({ isOpen, onClose, logId }) => {
             fetchLogs();
         }
     }, [isOpen, logId]);
-    
+
 
     if (!isOpen || !selectedLog) return null;
 

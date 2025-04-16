@@ -1,9 +1,4 @@
 <?php
-Header set Access-Control-Allow-Origin "http://192.168.1.14:3000/"
-
-Header set Access-Control-Allow-Methods "GET, POST, OPTIONS"
-Header set Access-Control-Allow-Headers "Content-Type, Authorization"
-
 // Start session
 session_start();
 

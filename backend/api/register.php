@@ -24,6 +24,11 @@ try {
         throw new Exception('Invalid email format');
     }
 
+    // Validate password requirements
+    if (!preg_match('/^(?=.*[A-Z])(?=.*[0-9])(?=.*[@#$%^&*]).{8,}$/', $data['password'])) {
+        throw new Exception('Password must be at least 8 characters long and contain at least one uppercase letter, one number, and one special character (@#$%^&*)');
+    }
+
     $db = new Database();
     $conn = $db->connect();
 

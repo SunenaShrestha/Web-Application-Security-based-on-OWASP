@@ -39,9 +39,10 @@ const PasswordValidation = ({ password }) => {
 };
 
 const AuthModal = ({ isOpen, onClose }) => {
-  const { setUser, checkAuth } = useAuth();
+  const { setUser } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
-  const [isReset, setIsReset] = useState(false);
+  const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false);
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
@@ -65,10 +66,23 @@ const AuthModal = ({ isOpen, onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
 
     try {
+      if (!isLogin) {
+        if (!validatePassword(formData.password)) {
+          setError('Password does not meet requirements');
+          setLoading(false);
+          return;
+        }
+        if (formData.password !== formData.confirmPassword) {
+          setError('Passwords do not match');
+          setLoading(false);
+          return;
+        }
+      }
+
       const endpoint = isLogin ? 'login' : 'register';
-      
       const response = await fetch(`http://localhost/backend/api/${endpoint}.php`, {
         method: 'POST',
         headers: {
@@ -89,15 +103,22 @@ const AuthModal = ({ isOpen, onClose }) => {
         throw new Error(data.error || 'Authentication failed');
       }
 
-      if (data.success && data.user && data.user.username) {
-        setUser(data.user);
-        onClose();
+      if (data.success) {
+        if (isLogin) {
+          setUser(data.user);
+          onClose();
+        } else {
+          setRegistrationSuccess(true);
+          setMessage(data.message || 'Registration successful! Please login with your credentials.');
+        }
       } else {
         throw new Error(data.error || 'Authentication failed');
       }
     } catch (error) {
-      console.error('Login error:', error);
-      setError(error.message || 'An error occurred during login');
+      console.error('Auth error:', error);
+      setError(error.message || 'An error occurred during authentication');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -113,12 +134,18 @@ const AuthModal = ({ isOpen, onClose }) => {
       <Modal isOpen={isOpen} onClose={onClose}>
         <div className="auth-modal success-modal">
           <h2>Registration Successful! 🎉</h2>
-          <p>Your account has been created successfully.</p>
+          <p>{message}</p>
           <button 
             className="submit-btn"
             onClick={() => {
               setRegistrationSuccess(false);
               setIsLogin(true);
+              setFormData({
+                email: formData.email,
+                password: '',
+                confirmPassword: '',
+                username: ''
+              });
             }}
           >
             Back to Login
@@ -187,15 +214,24 @@ const AuthModal = ({ isOpen, onClose }) => {
             </div>
           )}
 
-          <button type="submit" className="submit-btn">
-            {isLogin ? 'Login' : 'Sign Up'}
+          <button type="submit" className="submit-btn" disabled={loading}>
+            {loading ? 'Processing...' : (isLogin ? 'Login' : 'Sign Up')}
           </button>
         </form>
 
         <div className="auth-links">
           <button 
             className="link-btn"
-            onClick={() => setIsLogin(!isLogin)}
+            onClick={() => {
+              setIsLogin(!isLogin);
+              setError('');
+              setFormData({
+                email: '',
+                password: '',
+                confirmPassword: '',
+                username: ''
+              });
+            }}
           >
             {isLogin ? "Don't have an account? Sign Up" : "Already have an account? Login"}
           </button>
