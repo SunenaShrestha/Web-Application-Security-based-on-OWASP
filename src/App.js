@@ -12,6 +12,7 @@ import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import ProtectedRoute from './components/ProtectedRoute';
 import OrderSuccess from './pages/OrderSuccess';
+import SearchPage from './pages/SearchPage';
 import './App.css';
 
 const App = () => {
@@ -29,6 +30,7 @@ const App = () => {
               <Route path="/register" element={<Auth />} />
               
               <Route path="/cart" element={<Cart />} />
+              <Route path="/search" element={<SearchPage/>} />
               
               {/* Protected Checkout Route */}
               <Route

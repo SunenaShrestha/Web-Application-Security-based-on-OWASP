@@ -10,11 +10,24 @@ const Navbar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Debug logging
   useEffect(() => {
     console.log('Current user in Navbar:', user);
   }, [user]);
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    console.log('Search query:', searchQuery);
+    if (searchQuery.trim()) {
+      const encodedQuery = encodeURIComponent(searchQuery.trim());
+      console.log('Encoded query:', encodedQuery);
+      const searchUrl = `/search?q=${encodedQuery}`;
+      console.log('Navigating to:', searchUrl);
+      navigate(searchUrl, { replace: true });
+    }
+  };
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -48,6 +61,20 @@ const Navbar = () => {
       <Link to="/" className="nav-brand">
         Thank You Stickers Nepal
       </Link>
+      <div className="searchBar">
+        <form onSubmit={handleSearch} className="searchBar">
+          <input 
+            type="text" 
+            placeholder="Search..." 
+            value={searchQuery} 
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="search-input"
+          />
+          <button type="submit" className="search-btn">
+            <i className="search-icon">🔍</i>
+          </button>
+        </form>
+      </div>
       <div className="nav-links">
         <Link to="/products">Shop</Link>
 

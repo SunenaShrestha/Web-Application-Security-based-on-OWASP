@@ -6,6 +6,24 @@ const LogDetail = ({ isOpen, onClose, logId }) => {
     const [loginAttempts, setLoginAttempts] = useState([]);
     const [selectedLog, setSelectedLog] = useState(null);
     const [isBruteForce, setIsBruteForce] = useState(false);
+    const [isSqlInjection, setIsSqlInjection] = useState(false);
+
+    // SQL injection patterns to detect
+    const sqlInjectionPatterns = [
+        /['"](?:\s*OR\s+['"]?[^'"]*['"]?\s*=\s*['"]?[^'"]*['"]?|\s*UNION\s+SELECT)/i,
+        /['"]\s*;\s*(?:DROP|DELETE|UPDATE|INSERT|SELECT)/i,
+        /['"]\s*--\s*$/,
+        /['"]\s*\/\*.*\*\/\s*['"]/,
+        /['"]\s*WAITFOR\s+DELAY/i,
+        /['"]\s*EXEC\s*\(/i,
+        /['"]\s*sp_/i,
+        /['"]\s*xp_/i
+    ];
+
+    const checkForSqlInjection = (input) => {
+        if (!input) return false;
+        return sqlInjectionPatterns.some(pattern => pattern.test(input));
+    };
 
     useEffect(() => {
         const fetchLogs = async () => {
@@ -24,13 +42,23 @@ const LogDetail = ({ isOpen, onClose, logId }) => {
                         setSelectedLog(log);
     
                         // Brute Force Detection
-                        const recentFailedAttempts = data.attempts.filter(
-                            attempt =>
+                        const recentFailedAttempts = data.attempts.filter(attempt => {
+                            // Convert success to number for comparison
+                            const success = parseInt(attempt.success);
+                            return (
                                 attempt.ip_address === log.ip_address &&
-                                parseInt(attempt.success) === 0 &&
-                                new Date(attempt.attempt_time) > new Date(Date.now() - 30 * 60 * 1000)
-                        );
+                                success === 0 && // Failed attempt
+                                new Date(attempt.attempt_time) > new Date(Date.now() - 30 * 60 * 1000) // Last 30 minutes
+                            );
+                        });
+
+                        console.log('Recent failed attempts:', recentFailedAttempts.length);
                         setIsBruteForce(recentFailedAttempts.length >= 5);
+    
+                        // SQL Injection Detection
+                        const isEmailSqlInjection = checkForSqlInjection(log.email);
+                        const isUserAgentSqlInjection = checkForSqlInjection(log.user_agent);
+                        setIsSqlInjection(isEmailSqlInjection || isUserAgentSqlInjection);
                     }
                 }
             } catch (error) {
@@ -43,7 +71,6 @@ const LogDetail = ({ isOpen, onClose, logId }) => {
         }
     }, [isOpen, logId]);
 
-
     if (!isOpen || !selectedLog) return null;
 
     return (
@@ -54,10 +81,20 @@ const LogDetail = ({ isOpen, onClose, logId }) => {
                     <button className="close-button" onClick={onClose}>×</button>
                 </div>
                 <div className="modal-body">
-                    {isBruteForce && (
-                        <div className="brute-force-warning">
-                            ⚠️ Warning: Multiple failed login attempts detected from this IP address. 
-                            This may indicate a brute force attack.
+                    {(isBruteForce || isSqlInjection) && (
+                        <div className="security-warnings">
+                            {isBruteForce && (
+                                <div className="brute-force-warning">
+                                    ⚠️ Warning: Multiple failed login attempts detected from this IP address. 
+                                    This may indicate a brute force attack.
+                                </div>
+                            )}
+                            {isSqlInjection && (
+                                <div className="sql-injection-warning">
+                                    ⚠️ Warning: SQL injection attempt detected in the login attempt.
+                                    This is a potential security threat.
+                                </div>
+                            )}
                         </div>
                     )}
                     <div className="log-details">
@@ -83,8 +120,8 @@ const LogDetail = ({ isOpen, onClose, logId }) => {
                         </div>
                         <div className="detail-row">
                             <span className="detail-label">Status:</span>
-                            <span className={`status ${selectedLog.success === 1 ? 'success' : 'failure'}`}>
-                                {selectedLog.success === 1 ? 'Success' : 'Failed'}
+                            <span className={`status ${parseInt(selectedLog.success) === 1 ? 'success' : 'failure'}`}>
+                                {parseInt(selectedLog.success) === 1 ? 'Success' : 'Failed'}
                             </span>
                         </div>
                     </div>
