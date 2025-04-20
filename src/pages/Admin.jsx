@@ -26,7 +26,7 @@ const Admin = () => {
   const [showBruteForceAlert, setShowBruteForceAlert] = useState(false);
   const [isLogDetailOpen, setLogDetailOpen] = useState(false);
   const [selectedLogId, setSelectedLogId] = useState(null);
-
+  const [hasDismissedAlert, setHasDismissedAlert] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -292,14 +292,20 @@ const Admin = () => {
       fetchLoginAttempts();
     }
   }, [activeTab]);
+
   
   // Initial fetch for brute force detection
   useEffect(() => {
     fetchLoginAttempts();
     // Fetch login attempts every 30 seconds to update brute force detection
-    const interval = setInterval(fetchLoginAttempts, 30000);
+    const interval = setInterval(fetchLoginAttempts,30000);
     return () => clearInterval(interval);
   }, []);
+
+  const handleDismissAlert = () => {
+    setShowBruteForceAlert(false);
+    setHasDismissedAlert(true); // Prevent future alerts until page reload
+  };
 
   const handleViewLogs = (logId) => {
     setSelectedLogId(logId);
@@ -313,7 +319,7 @@ const Admin = () => {
           <div className="brute-force-alert">
             <h2>⚠️ Security Alert</h2>
             <p>Multiple failed login attempts detected. Possible brute force attack in progress.</p>
-            <button onClick={() => setShowBruteForceAlert(false)}>Dismiss</button>
+            <button onClick={handleDismissAlert}>Dismiss</button>
           </div>
         </div>
       )}

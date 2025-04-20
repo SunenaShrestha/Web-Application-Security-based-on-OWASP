@@ -98,20 +98,6 @@ const SearchPage = () => {
 
   return (
     <div className="search-page">
-      <div className="search-container">
-        <form onSubmit={handleSearch} className="search-form">
-          <input
-            type="text"
-            name="search"
-            placeholder="Search products..."
-            defaultValue={searchQuery}
-            className="search-input"
-          />
-          <button type="submit" className="search-button">
-            Search
-          </button>
-        </form>
-      </div>
 
       <div className="search-results">
         {searchQuery && <h2>Search Results for: "{sanitizeInput(searchQuery)}"</h2>}
