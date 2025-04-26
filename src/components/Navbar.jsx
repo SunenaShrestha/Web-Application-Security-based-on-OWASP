@@ -61,21 +61,21 @@ const Navbar = () => {
       <Link to="/" className="nav-brand">
         Thank You Stickers Nepal
       </Link>
-      <div className="searchBar">
-        <form onSubmit={handleSearch} className="searchBar">
-          <input 
-            type="text" 
-            placeholder="Search..." 
-            value={searchQuery} 
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="search-input"
-          />
-          <button type="submit" className="search-btn">
-            <i className="search-icon">🔍</i>
-          </button>
-        </form>
-      </div>
       <div className="nav-links">
+        <div className="searchBar">
+          <form onSubmit={handleSearch} className="searchBar">
+            <input 
+              type="text" 
+              placeholder="Search..." 
+              value={searchQuery} 
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="search-input"
+            />
+            <button type="submit" className="search-btn">
+              <span className="search-icon"></span>
+            </button>
+          </form>
+        </div>
         <Link to="/products">Shop</Link>
 
         {user && user.username ? (

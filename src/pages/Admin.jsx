@@ -298,7 +298,7 @@ const Admin = () => {
   useEffect(() => {
     fetchLoginAttempts();
     // Fetch login attempts every 30 seconds to update brute force detection
-    const interval = setInterval(fetchLoginAttempts,30000);
+    const interval = setInterval(fetchLoginAttempts, 30 * 60 * 1000);
     return () => clearInterval(interval);
   }, []);
 

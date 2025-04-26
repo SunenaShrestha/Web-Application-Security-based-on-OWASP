@@ -79,7 +79,7 @@ const ProductDetail = () => {
       }
     } catch (error) {
       console.error('Add to cart error:', error);
-      alert('Failed to add product to cart. Please try again.');
+      alert('Please login to add product to your cart.');
     }
   };
 

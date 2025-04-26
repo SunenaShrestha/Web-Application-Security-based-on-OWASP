@@ -137,3 +137,69 @@
     [:image_url] => uploads/67b2010a84823.png
 )
 
+[19-Apr-2025 19:27:03 Europe/Berlin] Request received: POST
+[19-Apr-2025 19:27:03 Europe/Berlin] POST data: Array
+(
+    [name] => 1 inch sticker
+    [description] => Business Packaging
+    [dimensions] => 1 inch
+    [price] => 350.00
+    [style] => Matte
+)
+
+[19-Apr-2025 19:27:03 Europe/Berlin] FILES data: Array
+(
+    [image] => Array
+        (
+            [name] => image 2.jpg
+            [type] => image/jpeg
+            [tmp_name] => C:\xampp\tmp\php62FD.tmp
+            [error] => 0
+            [size] => 9037
+        )
+
+)
+
+[19-Apr-2025 19:27:03 Europe/Berlin] SQL Parameters: Array
+(
+    [:name] => 1 inch sticker
+    [:description] => Business Packaging
+    [:dimensions] => 1 inch
+    [:price] => 350
+    [:style] => Matte
+    [:image_url] => uploads/6803dce7a63b0.jpg
+)
+
+[22-Apr-2025 13:18:50 Europe/Berlin] Request received: POST
+[22-Apr-2025 13:18:50 Europe/Berlin] POST data: Array
+(
+    [name] => Glossy Thankyou Stickers
+    [description] => Business Packaging!
+    [dimensions] => 1.5 inch
+    [price] => 650.00
+    [style] => Glossy
+)
+
+[22-Apr-2025 13:18:50 Europe/Berlin] FILES data: Array
+(
+    [image] => Array
+        (
+            [name] => category3.jpg
+            [type] => image/jpeg
+            [tmp_name] => C:\xampp\tmp\phpCBE1.tmp
+            [error] => 0
+            [size] => 155458
+        )
+
+)
+
+[22-Apr-2025 13:18:50 Europe/Berlin] SQL Parameters: Array
+(
+    [:name] => Glossy Thankyou Stickers
+    [:description] => Business Packaging!
+    [:dimensions] => 1.5 inch
+    [:price] => 650
+    [:style] => Glossy
+    [:image_url] => uploads/68077b1a192f9.jpg
+)
+

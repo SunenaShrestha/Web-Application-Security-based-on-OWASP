@@ -5,8 +5,8 @@ header('Access-Control-Allow-Headers: Content-Type');
 header('Content-Type: application/json');
 
 // Enable error reporting
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
+// ini_set('display_errors', 1);
+// error_reporting(E_ALL);
 
 // Log request details
 error_log('GET Products Request received');

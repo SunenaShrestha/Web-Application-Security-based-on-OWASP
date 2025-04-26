@@ -1,4 +1,4 @@
-.modal-overlay {
+.modal-overlay-login {
   position: fixed;
   top: 0;
   left: 0;
@@ -11,12 +11,12 @@
   z-index: 1000;
 }
 
-.modal-content {
+.modal-content-login {
   background: white;
   padding: 2rem;
   border-radius: 8px;
   position: relative;
-  width: 90%;
+  width: 80%;
   max-width: 400px;
   animation: slideIn 0.3s ease-out;
 }

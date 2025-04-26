@@ -31,19 +31,19 @@ function Home() {
         <h2>Shop our most popular categories</h2>
         <div className="category-grid">
           <Link to="/products?style=matte" className="category-card">
-            <img src="/images/matte-sticker.jpg" alt="Matte Stickers" />
+            <img src="/images/category1.jpg" alt="Matte Stickers" />
             <h3>Matte</h3>
           </Link>
           <Link to="/products?style=glossy" className="category-card">
-            <img src="/images/glossy-sticker.jpg" alt="Glossy Stickers" />
+            <img src="/images/category2.jpg" alt="Glossy Stickers" />
             <h3>Glossy</h3>
           </Link>
           <Link to="/products?style=holographic" className="category-card">
-            <img src="/images/holographic-sticker.jpg" alt="Holographic Stickers" />
+            <img src="/images/category3.jpg" alt="Holographic Stickers" />
             <h3>Holographic</h3>
           </Link>
           <Link to="/products" className="category-card">
-            <img src="/images/all-stickers.jpg" alt="All Stickers" />
+            <img src="/images/category4.jpg" alt="All Stickers" />
             <h3>All Stickers</h3>
           </Link>
         </div>
