@@ -26,7 +26,7 @@ const Admin = () => {
   const [showBruteForceAlert, setShowBruteForceAlert] = useState(false);
   const [isLogDetailOpen, setLogDetailOpen] = useState(false);
   const [selectedLogId, setSelectedLogId] = useState(null);
-  const [hasDismissedAlert, setHasDismissedAlert] = useState(false);
+  const [lastDismissedAttackTime, setLastDismissedAttackTime] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -263,13 +263,23 @@ const Admin = () => {
       }
 
       const data = await response.json();
+      console.log('Fetch logs response:', data); // Debug log
       
       if (data.success) {
         setLoginAttempts(data.attempts);
         
-        // Check for brute force attempts
+        // Show alert only if:
+        // 1. There is a brute force attack AND
+        // 2. Either there's no last dismissed time OR the most recent failed attempt is after the last dismissal
         if (data.brute_force_alert) {
-          setShowBruteForceAlert(true);
+          const mostRecentAttempt = data.attempts[0]?.attempt_time;
+          const shouldShowAlert = !lastDismissedAttackTime || 
+                                (mostRecentAttempt && new Date(mostRecentAttempt) > new Date(lastDismissedAttackTime));
+          
+          if (shouldShowAlert) {
+            console.log('New brute force attack detected!'); // Debug log
+            setShowBruteForceAlert(true);
+          }
         }
       } else {
         throw new Error(data.error || 'Failed to fetch login attempts');
@@ -293,18 +303,18 @@ const Admin = () => {
     }
   }, [activeTab]);
 
-  
-  // Initial fetch for brute force detection
+  // Fetch login attempts every 15 seconds
   useEffect(() => {
     fetchLoginAttempts();
-    // Fetch login attempts every 30 seconds to update brute force detection
-    const interval = setInterval(fetchLoginAttempts, 30 * 60 * 1000);
+    const interval = setInterval(fetchLoginAttempts, 15000);
     return () => clearInterval(interval);
   }, []);
 
   const handleDismissAlert = () => {
+    console.log('Dismissing brute force alert'); // Debug log
     setShowBruteForceAlert(false);
-    setHasDismissedAlert(true); // Prevent future alerts until page reload
+    // Store the current time as the last dismissed time
+    setLastDismissedAttackTime(new Date().toISOString());
   };
 
   const handleViewLogs = (logId) => {

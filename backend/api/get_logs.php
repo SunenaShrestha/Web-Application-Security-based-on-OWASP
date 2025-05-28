@@ -19,6 +19,7 @@ try {
     
     // In a production app, add authentication check for admin here
     
+    // Get all login attempts
     $stmt = $conn->prepare("
         SELECT 
             id, 
@@ -35,20 +36,40 @@ try {
     $stmt->execute();
     $attempts = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
-    // Count failed attempts in the last hour for brute force detection
+    // Count failed attempts in the last 10 minutes for brute force detection
     $stmt = $conn->prepare("
-        SELECT COUNT(*) as failed_count
+        SELECT 
+            COUNT(*) as failed_count,
+            MAX(attempt_time) as last_attempt,
+            MIN(attempt_time) as first_attempt
         FROM login_attempts
         WHERE success = 0
-        AND attempt_time > DATE_SUB(NOW(), INTERVAL 1 HOUR)
+        AND attempt_time > DATE_SUB(NOW(), INTERVAL 10 MINUTE)
     ");
     $stmt->execute();
-    $failedCount = $stmt->fetch(PDO::FETCH_ASSOC)['failed_count'];
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    $failedCount = $result['failed_count'];
+    $lastAttempt = strtotime($result['last_attempt']);
+    $firstAttempt = strtotime($result['first_attempt']);
+    
+    // Calculate time difference between first and last attempt
+    $timeDiff = $lastAttempt - $firstAttempt;
+    
+    // Consider it a new attack session if:
+    // 1. There are 5 or more failed attempts AND
+    // 2. The attempts occurred within a 5-minute window
+    $isBruteForceAttack = $failedCount >= 5 && $timeDiff <= 300; // 300 seconds = 5 minutes
+    
+    // Debug log
+    error_log("Failed attempts in last 10 minutes: " . $failedCount);
+    error_log("Time difference between attempts: " . $timeDiff . " seconds");
+    error_log("Is brute force attack: " . ($isBruteForceAttack ? "yes" : "no"));
     
     echo json_encode([
         'success' => true,
         'attempts' => $attempts,
-        'brute_force_alert' => ($failedCount > 5) // Alert if more than 5 failed attempts in the last hour
+        'brute_force_alert' => $isBruteForceAttack
     ]);
     
 } catch (Exception $e) {

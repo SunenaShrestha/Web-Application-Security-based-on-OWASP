@@ -43,7 +43,6 @@ const ProtectedRoute = ({ children, role }) => {
   if (role && user.role !== role) {
     return <div className="unauthorized">You are not authorized to access this page.</div>;
   }
-
   return children;
 };
 

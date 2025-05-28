@@ -203,3 +203,25 @@
     [:image_url] => uploads/68077b1a192f9.jpg
 )
 
+[25-May-2025 19:08:37 Europe/Berlin] Request received: GET
+[25-May-2025 19:08:37 Europe/Berlin] POST data: Array
+(
+)
+
+[25-May-2025 19:08:37 Europe/Berlin] FILES data: Array
+(
+)
+
+[25-May-2025 19:08:37 Europe/Berlin] Error occurred: Invalid request method
+[25-May-2025 19:08:37 Europe/Berlin] Stack trace: #0 {main}
+[25-May-2025 19:09:09 Europe/Berlin] Request received: GET
+[25-May-2025 19:09:09 Europe/Berlin] POST data: Array
+(
+)
+
+[25-May-2025 19:09:09 Europe/Berlin] FILES data: Array
+(
+)
+
+[25-May-2025 19:09:09 Europe/Berlin] Error occurred: Invalid request method
+[25-May-2025 19:09:09 Europe/Berlin] Stack trace: #0 {main}
