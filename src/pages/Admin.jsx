@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import ProductForm from '../components/ProductForm';
 import './Admin.css';
 import LogDetail from './LogDetail';
@@ -24,9 +24,14 @@ const Admin = () => {
   const [orderItems, setOrderItems] = useState([]);
   const [loginAttempts, setLoginAttempts] = useState([]);
   const [showBruteForceAlert, setShowBruteForceAlert] = useState(false);
+  const [showSqlInjectionAlert, setShowSqlInjectionAlert] = useState(false);
   const [isLogDetailOpen, setLogDetailOpen] = useState(false);
   const [selectedLogId, setSelectedLogId] = useState(null);
-  const [lastDismissedAttackTime, setLastDismissedAttackTime] = useState(null);
+  const [lastDismissedSessionId, setLastDismissedSessionId] = useState(null);
+  const [lastDetectedSqlAttack, setLastDetectedSqlAttack] = useState(null);
+  const navigate = useNavigate();
+  // Increase cooldown to 5 minutes (300000 milliseconds)
+  const SQL_ALERT_COOLDOWN = 300000;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -254,6 +259,36 @@ const Admin = () => {
     }
   };
 
+  // Function to check if we should show SQL alert
+  const shouldShowSqlAlert = () => {
+    const lastAlertTime = parseInt(localStorage.getItem('lastSqlAlertTime') || '0');
+    const currentTime = Date.now();
+    const timeSinceLastAlert = currentTime - lastAlertTime;
+    
+    console.log('Last alert time:', new Date(lastAlertTime).toLocaleString());
+    console.log('Current time:', new Date(currentTime).toLocaleString());
+    console.log('Time since last alert (ms):', timeSinceLastAlert);
+    console.log('Cooldown period (ms):', SQL_ALERT_COOLDOWN);
+    console.log('Should show alert:', timeSinceLastAlert > SQL_ALERT_COOLDOWN);
+    
+    return timeSinceLastAlert > SQL_ALERT_COOLDOWN;
+  };
+
+  // Function to check if this is a new SQL injection attack
+  const isNewSqlAttack = (attackDetails) => {
+    if (!attackDetails || !lastDetectedSqlAttack) return true;
+    
+    // Compare timestamps
+    const lastTime = new Date(lastDetectedSqlAttack.timestamp).getTime();
+    const newTime = new Date(attackDetails.timestamp).getTime();
+    
+    // Compare the matched text to see if it's a different attack
+    const isDifferentAttack = lastDetectedSqlAttack.matched_text !== attackDetails.matched_text;
+    
+    // If the timestamp is newer and it's a different attack pattern, it's a new attack
+    return newTime > lastTime && isDifferentAttack;
+  };
+
   const fetchLoginAttempts = async () => {
     try {
       const response = await fetch('http://localhost/backend/api/get_logs.php');
@@ -263,22 +298,24 @@ const Admin = () => {
       }
 
       const data = await response.json();
-      console.log('Fetch logs response:', data); // Debug log
       
       if (data.success) {
         setLoginAttempts(data.attempts);
         
-        // Show alert only if:
-        // 1. There is a brute force attack AND
-        // 2. Either there's no last dismissed time OR the most recent failed attempt is after the last dismissal
-        if (data.brute_force_alert) {
-          const mostRecentAttempt = data.attempts[0]?.attempt_time;
-          const shouldShowAlert = !lastDismissedAttackTime || 
-                                (mostRecentAttempt && new Date(mostRecentAttempt) > new Date(lastDismissedAttackTime));
-          
-          if (shouldShowAlert) {
-            console.log('New brute force attack detected!'); // Debug log
+        // Show brute force alert
+        if (data.brute_force_alert && data.attack_info) {
+          const currentSessionId = data.attack_info.attack_session_id;
+          if (currentSessionId && currentSessionId !== lastDismissedSessionId) {
             setShowBruteForceAlert(true);
+          }
+        }
+
+        // Show SQL injection alert for new attacks
+        if (data.sql_injection_alert && data.sql_injection_info) {
+          if (isNewSqlAttack(data.sql_injection_info)) {
+            console.log('New SQL injection attack detected:', data.sql_injection_info);
+            setLastDetectedSqlAttack(data.sql_injection_info);
+            setShowSqlInjectionAlert(true);
           }
         }
       } else {
@@ -303,19 +340,35 @@ const Admin = () => {
     }
   }, [activeTab]);
 
-  // Fetch login attempts every 15 seconds
+  // Modify the polling interval to be longer (30 seconds instead of 15)
   useEffect(() => {
     fetchLoginAttempts();
-    const interval = setInterval(fetchLoginAttempts, 15000);
+    const interval = setInterval(fetchLoginAttempts, 30000);
     return () => clearInterval(interval);
   }, []);
 
-  const handleDismissAlert = () => {
-    console.log('Dismissing brute force alert'); // Debug log
+  const handleDismissBruteForceAlert = () => {
     setShowBruteForceAlert(false);
-    // Store the current time as the last dismissed time
-    setLastDismissedAttackTime(new Date().toISOString());
+    fetch('http://localhost/backend/api/get_logs.php')
+      .then(response => response.json())
+      .then(data => {
+        if (data.success && data.attack_info && data.attack_info.attack_session_id) {
+          setLastDismissedSessionId(data.attack_info.attack_session_id);
+        }
+      })
+      .catch(error => console.error('Error getting attack session ID:', error));
   };
+
+  const handleDismissSqlInjectionAlert = () => {
+    console.log('Dismissing SQL injection alert');
+    setShowSqlInjectionAlert(false);
+  };
+
+  // Clear the alert state when component mounts
+  useEffect(() => {
+    setShowSqlInjectionAlert(false);
+    setLastDetectedSqlAttack(null);
+  }, []);
 
   const handleViewLogs = (logId) => {
     setSelectedLogId(logId);
@@ -329,7 +382,17 @@ const Admin = () => {
           <div className="brute-force-alert">
             <h2>⚠️ Security Alert</h2>
             <p>Multiple failed login attempts detected. Possible brute force attack in progress.</p>
-            <button onClick={handleDismissAlert}>Dismiss</button>
+            <button onClick={handleDismissBruteForceAlert}>Dismiss</button>
+          </div>
+        </div>
+      )}
+
+      {showSqlInjectionAlert && (
+        <div className="sql-injection-overlay">
+          <div className="sql-injection-alert">
+            <h2>🚨 Security Alert</h2>
+            <p>SQL injection attempt detected! This is a serious security threat.</p>
+            <button onClick={handleDismissSqlInjectionAlert}>Dismiss</button>
           </div>
         </div>
       )}
